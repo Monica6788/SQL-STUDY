@@ -74,7 +74,111 @@ FROM EMPLOYEE
 GROUP BY DEPT_CODE
 HAVING COUNT(BONUS) = 0
 ORDER BY 1;
+------------------------------------------------------------------------------
+/*
+    ROLLUP, CUBE: 그룹 별 산출 결과 값의 집계 계산 함수
+    
+    ROLLUP: 전달 받은 그룹 중 가장 먼저 지정한 그룹 별로 추가적 집계 반환
+    CUBE: 전달 받은 그룹들로 가능한 모든 조합 별로 집계 반환
+    --> 전달 받은 그룹이 1개일 땐 별 차이가 없고, 2개 이상일 때에는 차이가 생김.
+*/
+-- 각 부서 내 직급별 급여 합, 부서별 급여 합, 전체 직원 급여 총합 조회
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY) "급여 총합"
+FROM EMPLOYEE
+GROUP BY ROLLUP(DEPT_CODE, JOB_CODE)
+ORDER BY 1;
+-- D1 (null) 7820000이 D1부서의 부서별 급여 합.
+-- (null) (null) 70096240이 전체 직원 급여 총합
 
+-- (비교용) 전체 직원 급여 총합
+SELECT SUM(SALARY)
+FROM EMPLOYEE;
+
+-- (비교용) ROLLUP 없는 부분
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY) "급여 총합"
+FROM EMPLOYEE
+GROUP BY DEPT_CODE, JOB_CODE
+ORDER BY 1;
+
+-- 부서별 급여 합, 직급별 급여 합, 부서 내 직급별 급여 합, 전체 지구언 급여 총합 조회
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY) "급여 총합"
+FROM EMPLOYEE
+GROUP BY CUBE(DEPT_CODE, JOB_CODE)
+ORDER BY 1;
+
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY) "급여 총합",
+        CASE WHEN GROUPING(DEPT_CODE) = 0 AND GROUPING(JOB_CODE) = 1 THEN '부서별 합계'
+             WHEN GROUPING(DEPT_CODE) = 1 AND GROUPING(JOB_CODE) = 0 THEN '직급별 합계'
+             WHEN GROUPING(DEPT_CODE) = 1 AND GROUPING(JOB_CODE) = 1 THEN '총 합계'
+             ELSE '그룹별 합계'
+        END 구분
+FROM EMPLOYEE
+GROUP BY CUBE(DEPT_CODE, JOB_CODE)
+ORDER BY 1;
+-----------------------------------------------------------------------------
+/*
+    집합 연산자: 여러 개의 SQL문을 하나의 SQL문으로 만들어주는 연산자
+    
+    UNION: 합집합(두 SQL문의 결과를 더해줌) --> OR과 유사
+    INTERSECT: 교집합(두 SQL문을 수행한 결과 중복되는 부분을 추출해줌) --> AND와 유사
+    UNION ALL: 합집합 + 교집합(중복되는 데이터는 두 번 조회될 수 있음.)
+    MINUS: 차집합(선행 결과에서 후행 결과를 뺀 나머지)
+*/
+-- UNION
+-- 부서코드가 D5인 사원 또는 급여가 300만원 초과인 사원들의 정보 조회 (직원번호, 이름, 부서코드, 급여)
+-- UNION 미사용
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5' OR SALARY > 3000000;
+
+-- UNION 사용
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5'
+UNION
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 3000000;
+
+-- UNION ALL 사용
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5'
+UNION ALL
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 3000000;
+
+-- INTERSECT
+-- INTERSECT 미사용
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5' AND SALARY > 3000000;
+
+-- INETERSECT 사용
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5'
+INTERSECT
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 3000000;
+
+-- MINUS
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5'
+MINUS
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 3000000;
+
+/*
+    집합 연산자 사용 시 주의 사항
+    [1] SQL문들의 컬럼 개수가 동일해야 함
+    [2] 컬럼 자리마다 동일한 타입으로 작성해야 함
+    [3] 정렬하고자 한다면 ORDER BY절은 "마지막 쿼리문"에 작성해야 함.
+*/
 
 
 
