@@ -27,6 +27,8 @@ WHERE DEPT_CODE IN (
 SELECT EMP_NAME, DEPT_CODE, JOB_CODE
 FROM EMPLOYEE
 WHERE (DEPT_CODE, JOB_CODE) IN (
+-- WHERE (DEPT_CODE, JOB_CODE) = (          --> 쌤 풀이
+-- 어차피 둘 다 일치하는 직원을 찾을 예정이므로 IN이 아닌 =을 쓰는 게 좋다.
     SELECT DEPT_CODE, JOB_CODE
     FROM EMPLOYEE
     WHERE EMP_NAME = '유하진') AND
