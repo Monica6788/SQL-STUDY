@@ -1,0 +1,42 @@
+-- CREATE SESSION 권한 부여 후 접속 성공!
+
+-- 테이블 생성
+/*
+    테이블명: TEST
+    컬럼: TEST_ID(NUMBER), TEST_NAME(VARCHAR2(10))
+*/
+DROP TABLE TEST;
+CREATE TABLE TEST (
+    TEST_ID NUMBER DEFAULT NULL CONSTRAINT PK_TEST_ID PRIMARY KEY,
+    TEST_NAME VARCHAR2(10) DEFAULT 'TEST' );
+
+SELECT * FROM TEST;
+
+-- TEST 테이블에 데이터 추가
+INSERT INTO TEST (TEST_ID, TEST_NAME) VALUES (1, '지원');
+COMMIT;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
