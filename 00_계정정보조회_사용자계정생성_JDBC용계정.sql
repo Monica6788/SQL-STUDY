@@ -1,0 +1,58 @@
+/*
+    테이블 생성: MEMBER
+            ID 컬럼 (숫자, 기본키)
+            NAME 컬럼 (문자 50바이트 가변 길이, NOT NULL)
+            EMAIL 컬럼 (문자 100바이트 가변 길이, NOT NULL)
+            AGE 컬럼 (숫자)
+    시퀀스 생성: SEQ_MEMBER_ID
+            시작 번호 1, 증가값 1, 캐시 X,
+*/
+DROP TABLE MEMBER;
+DROP SEQUENCE SEQ_MEMBER_ID;
+
+CREATE TABLE MEMBER (
+    ID NUMBER,
+    NAME VARCHAR2(50) NOT NULL,
+    EMAIL VARCHAR2(100) NOT NULL,
+    AGE NUMBER,
+    
+    CONSTRAINT MEMBER_PK_ID PRIMARY KEY(ID)
+);
+
+CREATE SEQUENCE SEQ_MEMBER_ID
+--START WITH 1
+--INCREMENT BY 1
+NOCACHE;
+
+-- 데이터 조회: SELECT
+SELECT * FROM MEMBER;
+
+-- 데이터 추가: INSERT
+INSERT INTO MEMBER VALUES (SEQ_MEMBER_ID.NEXTVAL, 'DANTE', 'DMC@email.com', 39);
+INSERT INTO MEMBER VALUES (SEQ_MEMBER_ID.NEXTVAL, 'NERO', 'DMC_F@email.com', 22);
+INSERT INTO MEMBER VALUES (SEQ_MEMBER_ID.NEXTVAL, 'TRISH', 'MARY@email.com', 39);
+
+COMMIT;
+
+SELECT * FROM MEMBER WHERE NAME = 'DANTE';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
